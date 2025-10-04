@@ -6,7 +6,7 @@ const Home = () => {
   const storedName = localStorage.getItem('userName');
   const storedRole = localStorage.getItem('userRole'); // "donor" or "patient"
 
-  const [user, setUser] = useState(
+  const [user] = useState(
     storedName ? { name: storedName, role: storedRole } : null
   );
 

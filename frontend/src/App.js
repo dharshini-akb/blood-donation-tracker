@@ -7,7 +7,6 @@ import Login from './components/Login';
 import Register from './components/Register';
 import AuthCallback from './components/AuthCallback';
 import Welcome from './pages/Welcome';
-import { useMemo } from 'react';
 import BloodAvailability from './pages/BloodAvailability';
 import BloodCenterDirectory from './pages/BloodCenterDirectory';
 import BloodDonationCamps from './pages/BloodDonationCamps';
