@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
-  // Get user info from localStorage
-  const storedName = localStorage.getItem('userName');
-  const storedRole = localStorage.getItem('userRole'); // "donor" or "patient"
-
-  const [user] = useState(
-    storedName ? { name: storedName, role: storedRole } : null
-  );
-
+  const [user, setUser] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Get user info from localStorage after component mounts (client-side only)
+  useEffect(() => {
+    const storedName = localStorage.getItem('userName');
+    const storedRole = localStorage.getItem('userRole');
+    if (storedName) {
+      setUser({ name: storedName, role: storedRole });
+    }
+  }, []);
 
   // Slideshow images
   const slides = [

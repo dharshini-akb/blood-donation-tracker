@@ -5,15 +5,22 @@ const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
-  });
-  const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const init = async () => {
+      // Load from localStorage on mount (client-side only)
+      const savedToken = localStorage.getItem('token');
+      const savedUser = localStorage.getItem('user');
+      
+      if (savedToken) {
+        setToken(savedToken);
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
+        }
+      }
 
       const params = new URLSearchParams(window.location.search);
       const googleToken = params.get('token');
@@ -24,12 +31,12 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('user', JSON.stringify({ name: googleName }));
         setToken(googleToken);
         setUser({ name: googleName });
-        window.history.replaceState({}, document.title, "/welcome"); // clean URL
+        window.history.replaceState({}, document.title, "/welcome");
         setLoading(false);
         return;
       }
 
-      if (token) {
+      if (savedToken) {
         try {
           const res = await authAPI.me();
           setUser(res.data.user);
@@ -43,7 +50,8 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     };
     init();
-  }, [token]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const register = async (data) => {
     if (!data.role) return { success: false, error: 'Please select a role' };
