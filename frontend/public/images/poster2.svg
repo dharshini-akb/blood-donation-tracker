@@ -1,0 +1,13 @@
+<svg width="1200" height="600" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g2" x1="0" x2="1" y1="1" y2="0">
+      <stop offset="0%" stop-color="#dc2626"/>
+      <stop offset="100%" stop-color="#7f1d1d"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#g2)"/>
+  <rect x="80" y="100" width="1040" height="400" rx="24" fill="white" opacity="0.06"/>
+  <text x="50%" y="46%" dominant-baseline="middle" text-anchor="middle" font-size="60" font-family="Inter, Arial, sans-serif" fill="white" font-weight="700">Be a Hero Today</text>
+  <text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-size="26" font-family="Inter, Arial, sans-serif" fill="white" opacity="0.9">Join our community of life-saving donors</text>
+</svg>
+

@@ -1,0 +1,14 @@
+<svg width="1200" height="600" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#b91c1c"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#g)"/>
+  <circle cx="200" cy="300" r="140" fill="white" opacity="0.15"/>
+  <circle cx="1000" cy="320" r="200" fill="white" opacity="0.08"/>
+  <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" font-size="64" font-family="Inter, Arial, sans-serif" fill="white" font-weight="700">Donate Blood, Save Lives</text>
+  <text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-size="28" font-family="Inter, Arial, sans-serif" fill="white" opacity="0.9">Your one donation can save up to three lives</text>
+</svg>
+

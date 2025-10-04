@@ -1,0 +1,17 @@
+<svg width="1200" height="600" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g3" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#991b1b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#g3)"/>
+  <g opacity="0.08" fill="white">
+    <circle cx="150" cy="150" r="100"/>
+    <circle cx="300" cy="500" r="80"/>
+    <circle cx="1000" cy="120" r="120"/>
+  </g>
+  <text x="50%" y="44%" dominant-baseline="middle" text-anchor="middle" font-size="62" font-family="Inter, Arial, sans-serif" fill="white" font-weight="700">Give Blood, Share Life</text>
+  <text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-size="26" font-family="Inter, Arial, sans-serif" fill="white" opacity="0.9">Together, we can make a difference</text>
+</svg>
+
