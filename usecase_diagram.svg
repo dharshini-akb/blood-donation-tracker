@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <style>
+    .actor { font: 16px Arial; fill: #222; }
+    .actor-box { fill: #f4f8ff; stroke: #2b6cb0; stroke-width:2; rx:6; }
+    .usecase { fill: #fffbe6; stroke: #b08900; stroke-width:2; }
+    .uc-text { font: 14px Arial; fill: #222; }
+    .line { stroke: #444; stroke-width:2; }
+    .section-title { font: 18px Arial; fill: #1a202c; font-weight:700; }
+  </style>
+
+  <!-- Title -->
+  <text x="40" y="40" class="section-title">Use Case Diagram — Blood Donation Tracker</text>
+
+  <!-- Actors (left column) -->
+  <g transform="translate(40,80)">
+    <rect x="0" y="0" width="220" height="60" class="actor-box" />
+    <text x="110" y="36" text-anchor="middle" class="actor">Donor</text>
+
+    <rect x="0" y="90" width="220" height="60" class="actor-box" />
+    <text x="110" y="126" text-anchor="middle" class="actor">Hospital</text>
+
+    <rect x="0" y="180" width="220" height="60" class="actor-box" />
+    <text x="110" y="216" text-anchor="middle" class="actor">Blood Center</text>
+
+    <rect x="0" y="270" width="220" height="60" class="actor-box" />
+    <text x="110" y="306" text-anchor="middle" class="actor">Camp Organizer</text>
+
+    <rect x="0" y="360" width="220" height="60" class="actor-box" />
+    <text x="110" y="396" text-anchor="middle" class="actor">Admin</text>
+
+    <rect x="0" y="450" width="220" height="60" class="actor-box" />
+    <text x="110" y="486" text-anchor="middle" class="actor">External Systems</text>
+  </g>
+
+  <!-- Use cases (center/right) -->
+  <g transform="translate(320,80)">
+    <!-- Authentication group -->
+    <ellipse cx="260" cy="30" rx="120" ry="26" class="usecase" />
+    <text x="260" y="34" text-anchor="middle" class="uc-text">Register / Login</text>
+
+    <!-- Donor UC -->
+    <ellipse cx="240" cy="110" rx="160" ry="26" class="usecase" />
+    <text x="240" y="114" text-anchor="middle" class="uc-text">View Blood Availability</text>
+
+    <ellipse cx="260" cy="160" rx="140" ry="26" class="usecase" />
+    <text x="260" y="164" text-anchor="middle" class="uc-text">Schedule Donation</text>
+
+    <ellipse cx="240" cy="210" rx="150" ry="26" class="usecase" />
+    <text x="240" y="214" text-anchor="middle" class="uc-text">View Donation History</text>
+
+    <ellipse cx="260" cy="260" rx="140" ry="26" class="usecase" />
+    <text x="260" y="264" text-anchor="middle" class="uc-text">Receive Notifications</text>
+
+    <!-- Hospital UC -->
+    <ellipse cx="640" cy="110" rx="160" ry="26" class="usecase" />
+    <text x="640" y="114" text-anchor="middle" class="uc-text">Submit Blood Request</text>
+
+    <ellipse cx="640" cy="160" rx="140" ry="26" class="usecase" />
+    <text x="640" y="164" text-anchor="middle" class="uc-text">Track Request</text>
+
+    <!-- Blood Center UC -->
+    <ellipse cx="640" cy="260" rx="160" ry="26" class="usecase" />
+    <text x="640" y="264" text-anchor="middle" class="uc-text">Update Inventory</text>
+
+    <ellipse cx="640" cy="310" rx="160" ry="26" class="usecase" />
+    <text x="640" y="314" text-anchor="middle" class="uc-text">Approve / Fulfill Request</text>
+
+    <ellipse cx="640" cy="360" rx="150" ry="26" class="usecase" />
+    <text x="640" y="364" text-anchor="middle" class="uc-text">Manage Donation Camps</text>
+
+    <ellipse cx="640" cy="410" rx="150" ry="26" class="usecase" />
+    <text x="640" y="414" text-anchor="middle" class="uc-text">Register Donor Check-in</text>
+
+    <ellipse cx="640" cy="460" rx="120" ry="26" class="usecase" />
+    <text x="640" y="464" text-anchor="middle" class="uc-text">View Reports</text>
+
+    <!-- Camp Organizer UC -->
+    <ellipse cx="980" cy="320" rx="150" ry="26" class="usecase" />
+    <text x="980" y="324" text-anchor="middle" class="uc-text">Create / Manage Camp</text>
+
+    <ellipse cx="980" cy="370" rx="150" ry="26" class="usecase" />
+    <text x="980" y="374" text-anchor="middle" class="uc-text">View Attendee Registrations</text>
+
+    <!-- Admin UC -->
+    <ellipse cx="980" cy="100" rx="160" ry="26" class="usecase" />
+    <text x="980" y="104" text-anchor="middle" class="uc-text">Manage Users & Roles</text>
+
+    <ellipse cx="980" cy="150" rx="160" ry="26" class="usecase" />
+    <text x="980" y="154" text-anchor="middle" class="uc-text">Manage Blood Centers</text>
+
+    <ellipse cx="980" cy="200" rx="140" ry="26" class="usecase" />
+    <text x="980" y="204" text-anchor="middle" class="uc-text">Configure System</text>
+
+    <ellipse cx="980" cy="250" rx="180" ry="26" class="usecase" />
+    <text x="980" y="254" text-anchor="middle" class="uc-text">View Analytics & Audit Logs</text>
+  </g>
+
+  <!-- Connections: Donor -->
+  <line x1="260" y1="120" x2="320" y2="110" class="line" />
+  <line x1="260" y1="170" x2="380" y2="160" class="line" />
+  <line x1="260" y1="220" x2="350" y2="210" class="line" />
+  <line x1="260" y1="270" x2="380" y2="260" class="line" />
+  <line x1="260" y1="50"  x2="320" y2="30"  class="line" />
+
+  <!-- Connections: Hospital -->
+  <line x1="140" y1="126" x2="560" y2="114" class="line" />
+  <line x1="140" y1="146" x2="560" y2="164" class="line" />
+
+  <!-- Connections: Blood Center -->
+  <line x1="140" y1="216" x2="560" y2="264" class="line" />
+  <line x1="140" y1="236" x2="560" y2="314" class="line" />
+  <line x1="140" y1="256" x2="560" y2="364" class="line" />
+  <line x1="140" y1="276" x2="560" y2="414" class="line" />
+  <line x1="140" y1="286" x2="560" y2="464" class="line" />
+
+  <!-- Connections: Camp Organizer -->
+  <line x1="140" y1="306" x2="920" y2="324" class="line" />
+  <line x1="140" y1="326" x2="920" y2="374" class="line" />
+
+  <!-- Connections: Admin -->
+  <line x1="140" y1="396" x2="920" y2="104" class="line" />
+  <line x1="140" y1="416" x2="920" y2="154" class="line" />
+  <line x1="140" y1="436" x2="920" y2="204" class="line" />
+  <line x1="140" y1="456" x2="920" y2="254" class="line" />
+
+  <!-- Connections: External Systems -->
+  <line x1="140" y1="486" x2="1120" y2="50" stroke="#888" stroke-dasharray="4,3" stroke-width="2" />
+
+  <!-- Small legend -->
+  <rect x="20" y="820" width="1360" height="60" rx="6" fill="#f7fafc" stroke="#cbd5e1" />
+  <text x="40" y="850" class="uc-text">Legend: Ovals = Use cases, Boxes = Actors, dashed line = external/integrations</text>
+</svg>

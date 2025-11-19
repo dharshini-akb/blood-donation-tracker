@@ -23,6 +23,27 @@ app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
 app.set('trust proxy', true);
+app.locals.dbConnected = true;
+const fs = require('fs');
+const path = require('path');
+const storePath = path.join(__dirname, 'data', 'dev-store.json');
+// ensure directory exists
+try { fs.mkdirSync(path.dirname(storePath), { recursive: true }); } catch {}
+let initialStore = { users: [], donations: [], bloodRequests: [], voluntaryCamps: [] };
+try {
+  if (fs.existsSync(storePath)) {
+    const raw = fs.readFileSync(storePath, 'utf-8');
+    initialStore = JSON.parse(raw);
+  }
+} catch {}
+app.locals.memoryStore = app.locals.memoryStore || initialStore;
+app.locals.saveStore = () => {
+  try {
+    fs.writeFileSync(storePath, JSON.stringify(app.locals.memoryStore, null, 2));
+  } catch (e) {
+    console.error('Failed to persist dev store:', e.message);
+  }
+};
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -39,7 +60,9 @@ mongoose
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch((err) => {
     console.error('❌ MongoDB connection error:', err?.message || err);
-    process.exit(1);
+    app.locals.dbConnected = false;
+    // persist current dev store on startup to ensure continuity
+    app.locals.saveStore();
   });
 
 

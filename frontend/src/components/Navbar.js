@@ -41,9 +41,12 @@ const Navbar = () => {
             <Link to="/directory" className="nav-link">
               Blood Centers
             </Link>
-            <Link to="/camps" className="nav-link">
-              Donation Camps
-            </Link>
+            {/* Camps page removed */}
+            {user && user.role === 'Admin' && (
+              <Link to="/admin/dashboard" className="nav-link">
+                Admin Dashboard
+              </Link>
+            )}
             {user && (
               <Link to="/schedule" className="nav-link">
                 Schedule Directory
@@ -133,13 +136,16 @@ const Navbar = () => {
           >
             Blood Centers
           </Link>
-          <Link
-            to="/camps"
-            className="text-secondary-700 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Donation Camps
-          </Link>
+          {/* Camps page removed */}
+          {user && user.role === 'Admin' && (
+            <Link
+              to="/admin/dashboard"
+              className="text-secondary-700 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Admin Dashboard
+            </Link>
+          )}
           {user && (
             <Link
               to="/schedule"

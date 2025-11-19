@@ -100,6 +100,18 @@ const BloodDonationSchedule = () => {
     }
   };
 
+  const handleDeleteSchedule = async (scheduleId) => {
+    try {
+      await axios.delete(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/schedules/${scheduleId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchSchedules();
+    } catch (err) {
+      setError('Failed to delete schedule');
+      console.error('Error deleting schedule:', err);
+    }
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
@@ -132,7 +144,7 @@ const BloodDonationSchedule = () => {
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-red-600">Blood Donation Schedule Directory</h1>
-            {user?.role === 'Patient' && (
+            {(user?.role === 'Patient' || user?.role === 'Admin') && (
               <button
                 onClick={() => setShowCreateForm(true)}
                 className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -333,6 +345,14 @@ const BloodDonationSchedule = () => {
                         Cancel Schedule
                       </button>
                     )}
+                    {(user?.role === 'Patient' && schedule.patient?._id === user.id) || user?.role === 'Admin' ? (
+                      <button
+                        onClick={() => handleDeleteSchedule(schedule._id)}
+                        className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 text-sm"
+                      >
+                        Delete
+                      </button>
+                    ) : null}
                   </div>
                 </div>
               ))

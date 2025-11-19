@@ -50,6 +50,33 @@ router.post('/register', [
     } = req.body;
 
     // Create new voluntary camp
+    const useMemory = req.app?.locals?.dbConnected === false;
+    if (useMemory) {
+      const store = req.app.locals.memoryStore;
+      const voluntaryCamp = {
+        id: Date.now().toString(),
+        campName,
+        organizerName,
+        organizerEmail,
+        organizerPhone,
+        city,
+        address,
+        date,
+        startTime,
+        endTime,
+        expectedDonors,
+        description,
+        requirements,
+        facilities: facilities || [],
+        additionalInfo: additionalInfo || '',
+        status: 'pending',
+        createdAt: new Date()
+      };
+      store.voluntaryCamps.push(voluntaryCamp);
+      req.app.locals.saveStore && req.app.locals.saveStore();
+      return res.status(201).json({ message: 'Voluntary blood camp registered successfully! We will review your application and contact you within 2-3 business days.', camp: { id: voluntaryCamp.id, campName: voluntaryCamp.campName, status: voluntaryCamp.status } });
+    }
+
     const voluntaryCamp = new VoluntaryCamp({
       campName,
       organizerName,
@@ -89,6 +116,11 @@ router.post('/register', [
 // @access  Private
 router.get('/all', authenticate, requireRole('Admin'), async (req, res) => {
   try {
+    const useMemory = req.app?.locals?.dbConnected === false;
+    if (useMemory) {
+      const store = req.app.locals.memoryStore;
+      return res.json({ camps: store.voluntaryCamps });
+    }
     const camps = await VoluntaryCamp.find().sort({ createdAt: -1 });
     res.json({ camps });
   } catch (error) {
@@ -102,6 +134,12 @@ router.get('/all', authenticate, requireRole('Admin'), async (req, res) => {
 // @access  Private
 router.get('/pending', authenticate, requireRole('Admin'), async (req, res) => {
   try {
+    const useMemory = req.app?.locals?.dbConnected === false;
+    if (useMemory) {
+      const store = req.app.locals.memoryStore;
+      const camps = store.voluntaryCamps.filter(c => c.status === 'pending');
+      return res.json({ camps });
+    }
     const camps = await VoluntaryCamp.find({ status: 'pending' }).sort({ createdAt: -1 });
     res.json({ camps });
   } catch (error) {
@@ -125,7 +163,22 @@ router.put('/:id/status', authenticate, requireRole('Admin'), [
       });
     }
 
+    const useMemory = req.app?.locals?.dbConnected === false;
     const { status } = req.body;
+
+    if (useMemory) {
+      const store = req.app.locals.memoryStore;
+      const idx = store.voluntaryCamps.findIndex(c => c.id === req.params.id);
+      if (idx === -1) return res.status(404).json({ message: 'Camp not found' });
+      store.voluntaryCamps[idx].status = status;
+      store.voluntaryCamps[idx].updatedAt = new Date();
+      req.app.locals.saveStore && req.app.locals.saveStore();
+      return res.json({
+        message: 'Camp status updated successfully',
+        camp: { id: store.voluntaryCamps[idx].id, campName: store.voluntaryCamps[idx].campName, status: store.voluntaryCamps[idx].status }
+      });
+    }
+
     const camp = await VoluntaryCamp.findByIdAndUpdate(
       req.params.id,
       { status },

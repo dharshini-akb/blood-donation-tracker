@@ -16,7 +16,7 @@ const generateToken = (userId, email, role) => {
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role, bloodGroup } = req.body;
+    const { name, email, password, role, bloodGroup, lastDonation } = req.body;
 
     // Validate required fields
     if (!name || !email || !password || !role) {
@@ -31,35 +31,30 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Blood group is required for donors' });
     }
 
-    // Check if user already exists
+    const useMemory = req.app?.locals?.dbConnected === false;
+
+    if (useMemory) {
+      const store = req.app.locals.memoryStore;
+      const exists = store.users.find(u => u.email === email);
+      if (exists) return res.status(400).json({ message: 'Email already registered' });
+      const salt = await bcrypt.genSalt(10);
+      const hashed = await bcrypt.hash(password, salt);
+      const id = Date.now().toString();
+      const newUser = { id, name, email, password: hashed, role, bloodGroup: role === 'Donor' ? bloodGroup : null, lastDonation: lastDonation ? new Date(lastDonation) : null, createdAt: new Date() };
+      store.users.push(newUser);
+      req.app.locals.saveStore && req.app.locals.saveStore();
+      const token = generateToken(id, email, role);
+      return res.status(201).json({ user: { id, name, email, role, bloodGroup: newUser.bloodGroup }, token });
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'Email already registered' });
     }
-
-    // Create new user
-    const newUser = new User({
-      name,
-      email,
-      password,
-      role,
-      ...(role === 'Donor' && { bloodGroup }),
-    });
-
+    const newUser = new User({ name, email, password, role, ...(role === 'Donor' && { bloodGroup }), ...(lastDonation && { lastDonation }) });
     await newUser.save();
-
     const token = generateToken(newUser._id, newUser.email, newUser.role);
-
-    res.status(201).json({
-      user: {
-        id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-        bloodGroup: newUser.bloodGroup || null,
-      },
-      token,
-    });
+    res.status(201).json({ user: { id: newUser._id, name: newUser.name, email: newUser.email, role: newUser.role, bloodGroup: newUser.bloodGroup || null }, token });
   } catch (error) {
     console.error('Registration Error:', error);
     if (error.code === 11000) {
@@ -77,24 +72,23 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
+    const useMemory = req.app?.locals?.dbConnected === false;
+    if (useMemory) {
+      const store = req.app.locals.memoryStore;
+      const user = store.users.find(u => u.email === email);
+      if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+      const token = generateToken(user.id, user.email, user.role);
+      return res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role, bloodGroup: user.bloodGroup || null }, token });
+    }
+
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
-
     const isMatch = await user.comparePassword(password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
-
     const token = generateToken(user._id, user.email, user.role);
-
-    res.json({
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        bloodGroup: user.bloodGroup || null,
-      },
-      token,
-    });
+    res.json({ user: { id: user._id, name: user.name, email: user.email, role: user.role, bloodGroup: user.bloodGroup || null }, token });
   } catch (error) {
     console.error('Login Error:', error);
     res.status(500).json({ message: 'Server error during login' });
@@ -106,20 +100,17 @@ router.get('/me', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) return res.status(401).json({ message: 'No token provided' });
-
     const decoded = jwt.verify(token, JWT_SECRET);
+    const useMemory = req.app?.locals?.dbConnected === false;
+    if (useMemory) {
+      const store = req.app.locals.memoryStore;
+      const user = store.users.find(u => u.id === decoded.id);
+      if (!user) return res.status(401).json({ message: 'User not found' });
+      return res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role, bloodGroup: user.bloodGroup || null } });
+    }
     const user = await User.findById(decoded.id);
     if (!user) return res.status(401).json({ message: 'User not found' });
-
-    res.json({
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        bloodGroup: user.bloodGroup || null,
-      },
-    });
+    res.json({ user: { id: user._id, name: user.name, email: user.email, role: user.role, bloodGroup: user.bloodGroup || null } });
   } catch (error) {
     console.error('Get User Error:', error);
     res.status(401).json({ message: 'Invalid token' });

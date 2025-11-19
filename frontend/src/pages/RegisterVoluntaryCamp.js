@@ -23,7 +23,23 @@ const RegisterVoluntaryCamp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
 
-  const cities = ['New York', 'Los Angeles', 'Chicago', 'Miami', 'Seattle', 'San Francisco', 'Boston', 'Denver', 'Austin', 'Other'];
+  const cities = [
+    'Erode',
+    'Perundurai',
+    'Bhavani',
+    'Gobichettipalayam',
+    'Sathyamangalam',
+    'Modakurichi',
+    'Anthiyur',
+    'Kavindapadi',
+    'Chithode',
+    'Nasiyanur',
+    'Kodumudi',
+    'Nambiyur',
+    'Ammapet',
+    'Punjai Puliampatti',
+    'Others'
+  ];
 
   const facilityOptions = [
     'Parking Available',

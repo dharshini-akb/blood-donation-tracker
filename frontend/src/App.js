@@ -8,8 +8,8 @@ import Register from './components/Register';
 import AuthCallback from './components/AuthCallback';
 import Welcome from './pages/Welcome';
 import BloodAvailability from './pages/BloodAvailability';
+import AdminDashboard from './pages/AdminDashboard';
 import BloodCenterDirectory from './pages/BloodCenterDirectory';
-import BloodDonationCamps from './pages/BloodDonationCamps';
 import BloodDonationSchedule from './pages/BloodDonationSchedule';
 import RegisterVoluntaryCamp from './pages/RegisterVoluntaryCamp';
 import LearnAboutDonation from './pages/LearnAboutDonation';
@@ -44,14 +44,15 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
+          <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
           {/* Role-specific modules */}
           <Route path="/admin" element={<ProtectedRoute roles={["Admin"]}><Welcome /></ProtectedRoute>} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute roles={["Admin"]}><AdminDashboard /></ProtectedRoute>} />
           <Route path="/donor" element={<ProtectedRoute roles={["Donor"]}><Welcome /></ProtectedRoute>} />
           <Route path="/patient" element={<ProtectedRoute roles={["Patient"]}><Welcome /></ProtectedRoute>} />
             <Route path="/availability" element={<BloodAvailability />} />
             <Route path="/directory" element={<BloodCenterDirectory />} />
-            <Route path="/camps" element={<BloodDonationCamps />} />
+            {/* Camps page removed */}
             <Route path="/schedule" element={<ProtectedRoute><BloodDonationSchedule /></ProtectedRoute>} />
             <Route path="/register-camp" element={<RegisterVoluntaryCamp />} />
             <Route path="/learn" element={<LearnAboutDonation />} />

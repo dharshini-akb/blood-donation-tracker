@@ -7,7 +7,7 @@ const fetch = (...args) => import('node-fetch').then(mod => mod.default(...args)
 
 const AI_PROVIDER = process.env.AI_PROVIDER || 'gemini';
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-pro';
 
@@ -74,6 +74,42 @@ router.post('/', async (req, res) => {
     const lastMessage = messages[messages.length - 1];
     const userMessage = lastMessage.content || '';
 
+    // Try OpenAI if configured
+    if (AI_PROVIDER === 'openai' && OPENAI_API_KEY && OPENAI_API_KEY !== 'your-openai-api-key-here') {
+      try {
+        const payload = {
+          model: OPENAI_MODEL,
+          temperature: 0.6,
+          messages: [
+            {
+              role: 'system',
+              content: 'You are an AI assistant for a blood donation tracker. Answer clearly and accurately. If a medical question requires professional advice, recommend consulting a healthcare provider.'
+            },
+            ...messages.map(m => ({ role: m.role || 'user', content: String(m.content || '') }))
+          ]
+        };
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${OPENAI_API_KEY}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const reply = data?.choices?.[0]?.message?.content || '';
+          if (reply) {
+            return res.json({ reply: String(reply).trim() });
+          }
+        }
+      } catch (error) {
+        console.log('OpenAI API failed, falling back:', error.message);
+      }
+    }
+
     // Try Gemini API first if available
     if (AI_PROVIDER === 'gemini' && GEMINI_API_KEY && GEMINI_API_KEY !== 'your-gemini-api-key-here') {
       try {
@@ -129,5 +165,93 @@ router.post('/', async (req, res) => {
 });
 
 module.exports = router;
+
+router.post('/stream', async (req, res) => {
+  try {
+    const { messages } = req.body;
+    if (!Array.isArray(messages) || messages.length === 0) {
+      res.status(400).setHeader('Content-Type', 'text/plain');
+      return res.end('');
+    }
+
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.flushHeaders && res.flushHeaders();
+
+    if (AI_PROVIDER === 'openai' && OPENAI_API_KEY && OPENAI_API_KEY !== 'your-openai-api-key-here') {
+      const payload = {
+        model: OPENAI_MODEL,
+        stream: true,
+        temperature: 0.6,
+        messages: [
+          { role: 'system', content: 'You are an AI assistant for a blood donation tracker. Answer clearly and accurately. If a medical question requires professional advice, recommend consulting a healthcare provider.' },
+          ...messages.map(m => ({ role: m.role || 'user', content: String(m.content || '') }))
+        ]
+      };
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${OPENAI_API_KEY}`
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok || !response.body) {
+        res.status(500);
+        return res.end('');
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let done = false;
+      while (!done) {
+        const { value, done: d } = await reader.read();
+        done = d;
+        if (value) {
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith('data:')) continue;
+            const data = trimmed.replace(/^data:\s*/, '');
+            if (data === '[DONE]') continue;
+            try {
+              const json = JSON.parse(data);
+              const delta = json.choices?.[0]?.delta?.content || '';
+              if (delta) res.write(delta);
+            } catch {}
+          }
+        }
+      }
+      return res.end();
+    }
+
+    if (GEMINI_API_KEY && AI_PROVIDER === 'gemini' && GEMINI_API_KEY !== 'your-gemini-api-key-here') {
+      try {
+        const systemInstruction = 'You are a helpful AI assistant for a blood donation tracker.';
+        const contents = [
+          { role: 'user', parts: [{ text: systemInstruction }] },
+          ...messages.map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: String(m.content || '') }] }))
+        ];
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents, generationConfig: { temperature: 0.6, topK: 40, topP: 0.9, maxOutputTokens: 1024 } })
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const content = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          if (content) res.write(String(content).trim());
+          return res.end();
+        }
+      } catch {}
+    }
+
+    const reply = getStaticResponse(String(messages[messages.length - 1]?.content || ''));
+    res.write(reply);
+    return res.end();
+  } catch (err) {
+    res.status(500).end('');
+  }
+});
 
 

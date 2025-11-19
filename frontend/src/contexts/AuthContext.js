@@ -55,6 +55,10 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (data) => {
     if (!data.role) return { success: false, error: 'Please select a role' };
+    // normalize role casing
+    if (data.role && typeof data.role === 'string') {
+      data.role = data.role.charAt(0).toUpperCase() + data.role.slice(1).toLowerCase();
+    }
     if (data.role === 'Donor' && !data.bloodGroup) {
       return { success: false, error: 'Please select your blood group' };
     }

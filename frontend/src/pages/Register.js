@@ -7,8 +7,9 @@ const Register = () => {
     name: "",
     email: "",
     password: "",
-    role: "donor", // default role
+    role: "Donor", // default role
     bloodGroup: "", // required if role=donor
+    lastDonation: "",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -84,12 +85,13 @@ const Register = () => {
             className="w-full p-3 border rounded-lg focus:ring focus:ring-red-200"
             required
           >
-            <option value="donor">Donor</option>
-            <option value="patient">Patient</option>
+            <option value="Donor">Donor</option>
+            <option value="Patient">Patient</option>
+            <option value="Admin">Admin</option>
           </select>
 
           {/* Blood Group (only if donor) */}
-          {formData.role === "donor" && (
+          {formData.role === "Donor" && (
             <select
               name="bloodGroup"
               value={formData.bloodGroup}
@@ -104,6 +106,16 @@ const Register = () => {
                 </option>
               ))}
             </select>
+          )}
+
+          {formData.role === "Donor" && (
+            <input
+              type="date"
+              name="lastDonation"
+              value={formData.lastDonation}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-lg focus:ring focus:ring-red-200"
+            />
           )}
 
           <button

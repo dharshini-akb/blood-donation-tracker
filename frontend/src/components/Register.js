@@ -11,6 +11,7 @@ const Register = () => {
     password: "",
     role: "",
     bloodGroup: "",
+    lastDonation: "",
   });
   const [error, setError] = useState("");
 
@@ -71,16 +72,17 @@ const Register = () => {
             <option value="">Select Role</option>
             <option value="Patient">Patient</option>
             <option value="Donor">Donor</option>
+            <option value="Admin">Admin</option>
           </select>
 
           
-          {form.role === "Donor" && (
-            <select
-              name="bloodGroup"
-              value={form.bloodGroup}
-              onChange={handleChange}
-              className="w-full border p-2 mb-3 rounded focus:outline-none focus:ring-2 focus:ring-red-400"
-            >
+        {form.role === "Donor" && (
+          <select
+            name="bloodGroup"
+            value={form.bloodGroup}
+            onChange={handleChange}
+            className="w-full border p-2 mb-3 rounded focus:outline-none focus:ring-2 focus:ring-red-400"
+          >
               <option value="">Select Blood Group</option>
               <option value="A+">A+</option>
               <option value="B+">B+</option>
@@ -90,8 +92,18 @@ const Register = () => {
               <option value="B-">B-</option>
               <option value="O-">O-</option>
               <option value="AB-">AB-</option>
-            </select>
-          )}
+          </select>
+        )}
+
+        {form.role === "Donor" && (
+          <input
+            type="date"
+            name="lastDonation"
+            value={form.lastDonation}
+            onChange={handleChange}
+            className="w-full border p-2 mb-3 rounded focus:outline-none focus:ring-2 focus:ring-red-400"
+          />
+        )}
 
           <button
             type="submit"

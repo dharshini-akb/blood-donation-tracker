@@ -2,6 +2,7 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const BloodRequest = require('../models/BloodRequest');
+const Donation = require('../models/Donation');
 const { authenticate, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
@@ -19,22 +20,37 @@ router.get('/availability/:bloodGroup', async (req, res) => {
       return res.status(400).json({ message: 'Invalid blood group' });
     }
 
-    // Count available donors for this blood group
-    const donorCount = await User.countDocuments({ 
-      bloodGroup, 
-      isDonor: true 
-    });
+    const useMemory = req.app?.locals?.dbConnected === false;
+    let enrichedDonors = [];
+    if (useMemory) {
+      const store = req.app.locals.memoryStore;
+      const donors = store.users.filter(u => u.role === 'Donor' && u.bloodGroup === bloodGroup);
+      enrichedDonors = donors.map(d => {
+        const lastDate = d.lastDonation ? new Date(d.lastDonation) : null;
+        const validUntil = lastDate ? new Date(lastDate.getTime() + 120 * 24 * 60 * 60 * 1000) : null;
+        const eligible = !lastDate || (Date.now() - (lastDate?.getTime() || 0)) <= 120 * 24 * 60 * 60 * 1000;
+        return { name: d.name, contact: d.email, lastDonation: lastDate, validUntil, eligible };
+      });
+    } else {
+      const donors = await User.find({ bloodGroup, role: 'Donor' }).select('name email bloodGroup lastDonation');
+      enrichedDonors = await Promise.all(donors.map(async (d) => {
+        const lastDonationRecord = await Donation.findOne({ donorEmail: d.email }).sort({ date: -1 }).lean();
+        const candidateDate = lastDonationRecord?.date || d.lastDonation || null;
+        const lastDate = candidateDate ? new Date(candidateDate) : null;
+        const validUntil = lastDate ? new Date(lastDate.getTime() + 120 * 24 * 60 * 60 * 1000) : null;
+        const eligible = !lastDate || (Date.now() - (lastDate?.getTime() || 0)) <= 120 * 24 * 60 * 60 * 1000;
+        return { name: d.name, contact: d.email, lastDonation: lastDate, validUntil, eligible };
+      }));
+    }
 
-    // Check if blood is available (considering 2+ donors as available)
-    const isAvailable = donorCount >= 2;
-    
+    const units = enrichedDonors.filter(d => d.eligible).length;
+    const isAvailable = units > 0;
+
     res.json({
       bloodGroup,
-      isAvailable,
-      donorCount,
-      message: isAvailable 
-        ? `Blood group ${bloodGroup} is available with ${donorCount} donors` 
-        : `Blood group ${bloodGroup} is currently not available`
+      available: isAvailable,
+      units,
+      donors: enrichedDonors
     });
 
   } catch (error) {
@@ -166,6 +182,7 @@ router.put('/requests/:id/status', authenticate, [
   try {
     const { id } = req.params;
     const { status } = req.body;
+    const useMemory = req.app?.locals?.dbConnected === false;
 
     // Check for validation errors
     const errors = validationResult(req);
@@ -176,6 +193,17 @@ router.put('/requests/:id/status', authenticate, [
       });
     }
 
+    if (useMemory) {
+      const store = req.app.locals.memoryStore;
+      const idx = store.bloodRequests.findIndex(r => r.id === id);
+      if (idx === -1) return res.status(404).json({ message: 'Blood request not found' });
+      if (req.role !== 'Admin') return res.status(403).json({ message: 'Not authorized to update this request' });
+      store.bloodRequests[idx].status = status;
+      store.bloodRequests[idx].updatedAt = new Date();
+      req.app.locals.saveStore && req.app.locals.saveStore();
+      return res.json({ message: 'Blood request status updated successfully', request: { id, status, updatedAt: store.bloodRequests[idx].updatedAt } });
+    }
+
     const bloodRequest = await BloodRequest.findById(id);
     
     if (!bloodRequest) {
@@ -183,7 +211,7 @@ router.put('/requests/:id/status', authenticate, [
     }
 
     // Only allow the requester or admin to update status
-    if (bloodRequest.requestedBy.toString() !== req.user._id.toString()) {
+    if (req.role !== 'Admin' && bloodRequest.requestedBy.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Not authorized to update this request' });
     }
 

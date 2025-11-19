@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000">
+  <style>
+    .class-box { fill:#fff; stroke:#333; stroke-width:2; }
+    .class-title { font: 16px Arial; font-weight:700; fill:#111; }
+    .attr { font: 13px Arial; fill:#222; }
+    .assoc { stroke:#666; stroke-width:2; marker-end: url(#arrow); }
+    .note { font:12px Arial; fill:#555; }
+  </style>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 z" fill="#666" />
+    </marker>
+  </defs>
+
+  <text x="40" y="30" font-size="18" font-weight="700">Class Diagram — Blood Donation Tracker (generated)</text>
+
+  <!-- User class -->
+  <g transform="translate(40,60)">
+    <rect class="class-box" x="0" y="0" width="320" height="120" rx="6" />
+    <text x="160" y="24" class="class-title" text-anchor="middle">User</text>
+    <text x="10" y="50" class="attr">- name: String</text>
+    <text x="10" y="70" class="attr">- email: String</text>
+    <text x="10" y="90" class="attr">- password: String</text>
+    <text x="10" y="110" class="attr">- googleId: String</text>
+    <text x="180" y="50" class="attr">- role: String (Patient|Donor|Admin)</text>
+    <text x="180" y="70" class="attr">- bloodGroup: String</text>
+    <text x="180" y="90" class="attr">- createdAt: Date</text>
+  </g>
+
+  <!-- Donor class -->
+  <g transform="translate(390,60)">
+    <rect class="class-box" x="0" y="0" width="320" height="110" rx="6" />
+    <text x="160" y="24" class="class-title" text-anchor="middle">Donor</text>
+    <text x="10" y="50" class="attr">- name: String</text>
+    <text x="10" y="70" class="attr">- email: String</text>
+    <text x="10" y="90" class="attr">- password: String</text>
+    <text x="170" y="50" class="attr">- bloodGroup: String</text>
+    <text x="170" y="70" class="attr">- createdAt: Date</text>
+  </g>
+
+  <!-- Patient class -->
+  <g transform="translate(740,60)">
+    <rect class="class-box" x="0" y="0" width="280" height="100" rx="6" />
+    <text x="140" y="24" class="class-title" text-anchor="middle">Patient</text>
+    <text x="10" y="50" class="attr">- name: String</text>
+    <text x="10" y="70" class="attr">- email: String</text>
+    <text x="10" y="90" class="attr">- password: String</text>
+  </g>
+
+  <!-- BloodCenter class -->
+  <g transform="translate(40,220)">
+    <rect class="class-box" x="0" y="0" width="360" height="110" rx="6" />
+    <text x="180" y="24" class="class-title" text-anchor="middle">BloodCenter</text>
+    <text x="10" y="50" class="attr">- name: String</text>
+    <text x="10" y="70" class="attr">- address: String</text>
+    <text x="10" y="90" class="attr">- city: String</text>
+    <text x="10" y="110" class="attr">- phone: String</text>
+    <text x="190" y="50" class="attr">- email: String</text>
+    <text x="190" y="70" class="attr">- hours: String</text>
+  </g>
+
+  <!-- Donation class -->
+  <g transform="translate(430,220)">
+    <rect class="class-box" x="0" y="0" width="360" height="130" rx="6" />
+    <text x="180" y="24" class="class-title" text-anchor="middle">Donation</text>
+    <text x="10" y="50" class="attr">- centerId: Number</text>
+    <text x="10" y="70" class="attr">- centerName: String</text>
+    <text x="10" y="90" class="attr">- donorName: String</text>
+    <text x="10" y="110" class="attr">- donorEmail: String</text>
+    <text x="190" y="50" class="attr">- date: Date</text>
+    <text x="190" y="70" class="attr">- time: String</text>
+    <text x="190" y="90" class="attr">- status: String</text>
+    <text x="190" y="110" class="attr">- createdAt: Date</text>
+  </g>
+
+  <!-- BloodRequest class -->
+  <g transform="translate(820,220)">
+    <rect class="class-box" x="0" y="0" width="340" height="130" rx="6" />
+    <text x="170" y="24" class="class-title" text-anchor="middle">BloodRequest</text>
+    <text x="10" y="50" class="attr">- patientName: String</text>
+    <text x="10" y="70" class="attr">- bloodGroup: String</text>
+    <text x="10" y="90" class="attr">- location: String</text>
+    <text x="10" y="110" class="attr">- contact: String</text>
+    <text x="190" y="50" class="attr">- urgency: String</text>
+    <text x="190" y="70" class="attr">- additionalInfo: String</text>
+    <text x="190" y="90" class="attr">- createdAt: Date</text>
+  </g>
+
+  <!-- Schedule class -->
+  <g transform="translate(40,420)">
+    <rect class="class-box" x="0" y="0" width="420" height="160" rx="6" />
+    <text x="210" y="24" class="class-title" text-anchor="middle">Schedule</text>
+    <text x="10" y="50" class="attr">- patient: ObjectId (ref User)</text>
+    <text x="10" y="70" class="attr">- donor: ObjectId (ref User) (optional)</text>
+    <text x="10" y="90" class="attr">- bloodGroup: String</text>
+    <text x="10" y="110" class="attr">- scheduledDate: Date</text>
+    <text x="10" y="130" class="attr">- scheduledTime: String</text>
+    <text x="220" y="50" class="attr">- location: String</text>
+    <text x="220" y="70" class="attr">- status: String</text>
+    <text x="220" y="90" class="attr">- notes: String</text>
+    <text x="220" y="110" class="attr">- urgency: String</text>
+    <text x="220" y="130" class="attr">- contactPhone: String</text>
+  </g>
+
+  <!-- VoluntaryCamp class -->
+  <g transform="translate(500,420)">
+    <rect class="class-box" x="0" y="0" width="520" height="260" rx="6" />
+    <text x="260" y="24" class="class-title" text-anchor="middle">VoluntaryCamp</text>
+    <text x="10" y="50" class="attr">- campName: String</text>
+    <text x="10" y="70" class="attr">- organizerName: String</text>
+    <text x="10" y="90" class="attr">- organizerEmail: String</text>
+    <text x="10" y="110" class="attr">- organizerPhone: String</text>
+    <text x="10" y="130" class="attr">- city: String</text>
+    <text x="10" y="150" class="attr">- address: String</text>
+    <text x="10" y="170" class="attr">- date: Date</text>
+    <text x="270" y="50" class="attr">- startTime: String</text>
+    <text x="270" y="70" class="attr">- endTime: String</text>
+    <text x="270" y="90" class="attr">- expectedDonors: Number</text>
+    <text x="270" y="110" class="attr">- description: String</text>
+    <text x="270" y="130" class="attr">- requirements: String</text>
+    <text x="270" y="150" class="attr">- facilities: [String]</text>
+    <text x="270" y="170" class="attr">- additionalInfo: String</text>
+    <text x="270" y="190" class="attr">- status: String</text>
+    <text x="270" y="210" class="attr">- createdAt: Date</text>
+  </g>
+
+  <!-- Associations (arrows/lines) -->
+  <line x1="360" y1="120" x2="430" y2="120" class="assoc" />
+  <text x="380" y="110" class="note">User (donor) &lt;-- creates --&gt; Donation</text>
+
+  <line x1="680" y1="250" x2="820" y2="250" class="assoc" />
+  <text x="730" y="240" class="note">Donation / Center relation (centerId)</text>
+
+  <line x1="220" y1="260" x2="220" y2="420" stroke="#888" stroke-dasharray="4,3" />
+  <text x="240" y="340" class="note">BloodCenter manages VoluntaryCamp</text>
+
+  <line x1="560" y1="360" x2="560" y2="420" class="assoc" />
+  <text x="580" y="390" class="note">Schedule links Patient & Donor</text>
+
+  <line x1="1000" y1="250" x2="760" y2="320" stroke="#666" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="860" y="280" class="note">Hospital submits BloodRequest</text>
+
+  <text x="40" y="960" class="note">Notes: ObjectId refs are used in Schedule (patient, donor). Some models (Donation) use centerId/centerName instead of direct DB refs. Adjust relationships if you prefer DB referencing.</text>
+</svg>

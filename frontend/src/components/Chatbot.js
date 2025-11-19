@@ -85,18 +85,57 @@ const Chatbot = () => {
       return { role: m.role || 'user', content: m.content };
     });
     try {
-      const res = await chatAPI.ask(mapped);
-      const aiReply = res.data?.reply || '';
-      if (aiReply) {
-        setMessages(prev => [...prev, {
-          message: aiReply,
-          senderRole: 'Assistant',
-          senderName: 'Assistant',
-          timestamp: new Date().toISOString()
-        }]);
+      const base = (process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001/api');
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${base}/chat/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ messages: mapped })
+      });
+      if (res.ok && res.body) {
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let assistantIndex = null;
+        let buffer = '';
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value);
+          if (assistantIndex === null) {
+            assistantIndex = messages.length + 1;
+            setMessages(prev => [...prev, {
+              message: '',
+              senderRole: 'Assistant',
+              senderName: 'Assistant',
+              timestamp: new Date().toISOString()
+            }]);
+          }
+          const content = buffer;
+          setMessages(prev => {
+            const arr = [...prev];
+            const idx = arr.findIndex((m, i) => i === assistantIndex);
+            if (idx >= 0) {
+              arr[idx] = { ...arr[idx], message: content };
+            }
+            return arr;
+          });
+        }
+      } else {
+        const fallback = await chatAPI.ask(mapped);
+        const aiReply = fallback.data?.reply || '';
+        if (aiReply) {
+          setMessages(prev => [...prev, {
+            message: aiReply,
+            senderRole: 'Assistant',
+            senderName: 'Assistant',
+            timestamp: new Date().toISOString()
+          }]);
+        }
       }
     } catch (err) {
-      console.error('Chat AI error:', err);
       setMessages(prev => [...prev, {
         message: 'Sorry, I could not get a response right now. Please try again in a moment.',
         senderRole: 'Assistant',

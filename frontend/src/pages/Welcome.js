@@ -21,8 +21,7 @@ const Welcome = () => {
         features: [
           'Request blood donations',
           'Track donation history',
-          'Find nearby blood centers',
-          'Chat with donors'
+          'Find nearby blood centers'
         ]
       };
     } else if (user?.role === 'Donor') {
@@ -33,8 +32,7 @@ const Welcome = () => {
         features: [
           'Schedule blood donations',
           'Track donation history',
-          'Find donation centers',
-          'Chat with patients'
+          'Find donation centers'
         ]
       };
     }
@@ -114,12 +112,7 @@ const Welcome = () => {
             >
               Find Blood Centers
             </button>
-            <button
-              onClick={() => navigate('/camps')}
-              className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition"
-            >
-              View Donation Camps
-            </button>
+            {/* Camps page removed */}
             <button
               onClick={() => setShowChatbot(true)}
               className="bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 transition"

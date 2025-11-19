@@ -41,9 +41,11 @@ router.get('/', authenticate, async (req, res) => {
 });
 
 
-router.post('/', authenticate, requireRole('Patient'), async (req, res) => {
+router.post('/', authenticate, async (req, res) => {
   try {
-   
+    if (!['Patient', 'Admin'].includes(req.user.role)) {
+      return res.status(403).json({ message: 'Not authorized to create schedule' });
+    }
 
     const {
       bloodGroup,
@@ -163,8 +165,8 @@ router.get('/:id', authenticate, async (req, res) => {
   }
 });
 
-// Delete schedule (Patient only)
-router.delete('/:id', authenticate, requireRole('Patient'), async (req, res) => {
+// Delete schedule (Patient or Admin)
+router.delete('/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -173,8 +175,9 @@ router.delete('/:id', authenticate, requireRole('Patient'), async (req, res) => 
       return res.status(404).json({ message: 'Schedule not found' });
     }
 
-    // Only patient can delete their own schedule
-    if (schedule.patient.toString() !== String(req.user._id || req.user.id)) {
+    const isOwner = schedule.patient.toString() === String(req.user._id || req.user.id);
+    const isAdmin = req.user.role === 'Admin';
+    if (!isOwner && !isAdmin) {
       return res.status(403).json({ message: 'Not authorized to delete this schedule' });
     }
 

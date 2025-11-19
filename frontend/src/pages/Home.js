@@ -97,7 +97,7 @@ const Home = () => {
                 <Link to="/login?role=patient" className="btn-primary">Login</Link>
               ) : (
                 <div className="text-primary-600 font-medium">
-                  Welcome back, {user.name} ({user.role === 'patient' ? 'Patient' : 'Donor'})!
+                  Welcome back, {user.name} ({user.role === 'Patient' ? 'Patient' : 'Donor'})!
                 </div>
               )}
             </div>
@@ -111,7 +111,7 @@ const Home = () => {
                 <Link to="/login?role=donor" className="btn-primary">Login</Link>
               ) : (
                 <div className="text-primary-600 font-medium">
-                  Welcome back, {user.name} ({user.role === 'donor' ? 'Donor' : 'Patient'})!
+                  Welcome back, {user.name} ({user.role === 'Donor' ? 'Donor' : 'Patient'})!
                 </div>
               )}
             </div>

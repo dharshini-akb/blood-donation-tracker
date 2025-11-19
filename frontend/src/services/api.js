@@ -52,7 +52,9 @@ export const voluntaryCampAPI = {
 export const bloodAPI = {
   checkAvailability: (bloodGroup) => api.get(`/blood/availability/${bloodGroup}`),
   createRequest: (data) => api.post('/blood/request', data),
+  createPublicBloodRequest: (data) => api.post('/blood-requests', data),
   getRequests: () => api.get('/blood/requests'),
+  getPublicRequests: () => api.get('/blood-requests'),
   getMyRequests: () => api.get('/blood/requests/my'),
   updateRequestStatus: (id, status) => api.put(`/blood/requests/${id}/status`, { status }),
 };

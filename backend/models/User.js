@@ -45,6 +45,9 @@ const userSchema = new mongoose.Schema({
       return this.role === 'Donor';
     },
   },
+  lastDonation: {
+    type: Date,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
