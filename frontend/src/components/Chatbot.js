@@ -100,6 +100,16 @@ const Chatbot = () => {
         const decoder = new TextDecoder('utf-8');
         let assistantIndex = null;
         let buffer = '';
+        const updateMessage = (content, index) => {
+          setMessages(prev => {
+            const arr = [...prev];
+            const idx = arr.findIndex((m, i) => i === index);
+            if (idx >= 0) {
+              arr[idx] = { ...arr[idx], message: content };
+            }
+            return arr;
+          });
+        };
         while (true) {
           const { value, done } = await reader.read();
           if (done) break;
@@ -114,14 +124,7 @@ const Chatbot = () => {
             }]);
           }
           const content = buffer;
-          setMessages(prev => {
-            const arr = [...prev];
-            const idx = arr.findIndex((m, i) => i === assistantIndex);
-            if (idx >= 0) {
-              arr[idx] = { ...arr[idx], message: content };
-            }
-            return arr;
-          });
+          updateMessage(content, assistantIndex);
         }
       } else {
         const fallback = await chatAPI.ask(mapped);
